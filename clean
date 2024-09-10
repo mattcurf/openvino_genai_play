@@ -1,0 +1,4 @@
+#!/bin/bash
+docker rmi openvino_genai
+docker volume rm model-volume
+

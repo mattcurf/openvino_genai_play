@@ -1,0 +1,19 @@
+#!/bin/bash
+
+_docker_image=openvino_genai
+
+_args="-e HUGGINGFACE_TOKEN=$HUGGINGFACE_TOKEN "
+
+if [ -d "/dev/dri" ]; then
+  _args+="--device /dev/dri:/dev/dri -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -e HAS_GPU=1"
+fi
+
+if [ -d "/dev/accel" ]; then
+  _args+=" --device /dev/accel:/dev/accel -e HAS_NPU=1"
+fi
+
+if [ ! "$(docker volume ls -f name=model-volume | awk '{print $NF}' | grep -E '^'model-volume'$')" ]; then
+  docker volume create --name model-volume 
+fi
+
+docker run -it --rm --security-opt seccomp=unconfined -v `pwd`:/project -w /project -v model-volume:/models $_args $_docker_image /bin/bash _run.sh

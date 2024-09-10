@@ -1,0 +1,5 @@
+#!/bin/bash
+
+arch=$(uname -i)
+docker build -t openvino_genai --progress plain -f Dockerfile.$arch .
+

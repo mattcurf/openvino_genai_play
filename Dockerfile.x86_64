@@ -1,0 +1,52 @@
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=america/los_angeles
+ENV PIP_ROOT_USER_ACTION=ignore
+
+# Base packages
+RUN apt update && \
+    apt install --no-install-recommends -q -y \
+    build-essential \
+    git \
+    libtbb12 \
+    ocl-icd-libopencl1 \
+    software-properties-common \
+    wget 
+
+# Level Zero
+RUN mkdir -p /tmp/gpu && \
+ cd /tmp/gpu && \
+ wget https://github.com/oneapi-src/level-zero/releases/download/v1.17.6/level-zero_1.17.6+u22.04_amd64.deb && \
+ dpkg -i *.deb && \
+ rm *.deb
+
+# Intel GPU compute user-space drivers
+RUN mkdir -p /tmp/gpu && \
+ cd /tmp/gpu && \
+ wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.17193.4/intel-igc-core_1.0.17193.4_amd64.deb && \
+ wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.17193.4/intel-igc-opencl_1.0.17193.4_amd64.deb && \
+ wget https://github.com/intel/compute-runtime/releases/download/24.26.30049.6/intel-level-zero-gpu_1.3.30049.6_amd64.deb && \
+ wget https://github.com/intel/compute-runtime/releases/download/24.26.30049.6/intel-opencl-icd_24.26.30049.6_amd64.deb && \
+ wget https://github.com/intel/compute-runtime/releases/download/24.26.30049.6/libigdgmm12_22.3.20_amd64.deb && \
+ dpkg -i *.deb && \
+ rm *.deb
+
+# Intel NPU compute user-space drivers
+RUN mkdir -p /tmp/npu && \
+  cd /tmp/npu && \
+  wget https://github.com/intel/linux-npu-driver/releases/download/v1.6.0/intel-level-zero-npu_1.6.0.20240814-10390978568_ubuntu22.04_amd64.deb && \
+  wget https://github.com/intel/linux-npu-driver/releases/download/v1.6.0/intel-driver-compiler-npu_1.6.0.20240814-10390978568_ubuntu22.04_amd64.deb && \
+  dpkg -i *.deb && \
+  rm *.deb
+
+# PyPi based OpenVINO GenAI install
+RUN wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
+  bash Miniforge3-$(uname)-$(uname -m).sh -b && \
+  /bin/bash -c "source /root/miniforge3/bin/activate && \
+  conda create -n ov_genai python=3.10* -y" && \
+  /bin/bash -c "source /root/miniforge3/bin/activate ov_genai && \
+  git clone --recursive https://github.com/openvinotoolkit/openvino.genai.git && \
+  pip install update --upgrade && \
+  pip install openvino==2024.3.0 openvino-tokenizers==2024.3.0 openvino-genai==2024.3.0 && \
+  pip install --upgrade-strategy eager -r /openvino.genai/samples/requirements.txt && \
+  pip install --upgrade-strategy eager -r /openvino.genai/llm_bench/python/requirements.txt"
