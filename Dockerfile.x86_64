@@ -13,6 +13,10 @@ RUN apt update && \
     software-properties-common \
     wget 
 
+# Python
+RUN wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
+  bash Miniforge3-$(uname)-$(uname -m).sh -b
+
 # Level Zero
 RUN mkdir -p /tmp/gpu && \
  cd /tmp/gpu && \
@@ -40,9 +44,7 @@ RUN mkdir -p /tmp/npu && \
   rm *.deb
 
 # PyPi based OpenVINO GenAI install
-RUN wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
-  bash Miniforge3-$(uname)-$(uname -m).sh -b && \
-  /bin/bash -c "source /root/miniforge3/bin/activate && \
+RUN /bin/bash -c "source /root/miniforge3/bin/activate && \
   conda create -n ov_genai python=3.10* -y" && \
   /bin/bash -c "source /root/miniforge3/bin/activate ov_genai && \
   git clone --recursive https://github.com/openvinotoolkit/openvino.genai.git && \

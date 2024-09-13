@@ -1,7 +1,6 @@
 #!/bin/bash
 
-_docker_image=openvino_genai
-
+_docker_image=${PWD##*/}
 _args="-e HUGGINGFACE_TOKEN=$HUGGINGFACE_TOKEN "
 
 if [ -d "/dev/dri" ]; then
@@ -12,8 +11,4 @@ if [ -d "/dev/accel" ]; then
   _args+=" --device /dev/accel:/dev/accel -e HAS_NPU=1"
 fi
 
-if [ ! "$(docker volume ls -f name=model-volume | awk '{print $NF}' | grep -E '^'model-volume'$')" ]; then
-  docker volume create --name model-volume 
-fi
-
-docker run -it --rm --security-opt seccomp=unconfined -v `pwd`:/project -w /project -v model-volume:/models $_args $_docker_image
+docker run -it --rm --security-opt seccomp=unconfined -v `pwd`:/project -w /project -v model-volume:/models $_args $_docker_image $@

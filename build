@@ -1,5 +1,14 @@
 #!/bin/bash
 
-arch=$(uname -i)
-docker build -t openvino_genai --progress plain -f Dockerfile.$arch .
+if [ "$1" = "-f" ]; then
+  args+="--no-cache "
+  docker volume rm model-volume
+fi
+
+arch=$(uname -m)
+if [ "$arch" == "arm64" ]; then
+  arch="aarch64"
+fi
+
+docker build --progress plain -t ${PWD##*/} $args -f Dockerfile.$arch .
 

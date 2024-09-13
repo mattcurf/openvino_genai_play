@@ -15,10 +15,7 @@ run_benchmark(){
   python benchmark.py -m /models/$1/$2 -p "What is the meaning of life?" -n 2 -d $3 --torch_compile_backend openvino
 }
 
-_DEVICE=CPU
-if [ "$HAS_GPU" == "1" ]; then
-  _DEVICE=GPU
-fi
+_DEVICE=$(python /project/gpu_select.py)
 
 # meta-llama/Meta-Llama-3-8B
 # meta-llama/Meta-Llama-3.1-8B
