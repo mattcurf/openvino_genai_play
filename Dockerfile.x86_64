@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=america/los_angeles
 ENV PIP_ROOT_USER_ACTION=ignore
@@ -27,19 +27,19 @@ RUN mkdir -p /tmp/gpu && \
 # Intel GPU compute user-space drivers
 RUN mkdir -p /tmp/gpu && \
  cd /tmp/gpu && \
- wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.17193.4/intel-igc-core_1.0.17193.4_amd64.deb && \
- wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.17193.4/intel-igc-opencl_1.0.17193.4_amd64.deb && \
- wget https://github.com/intel/compute-runtime/releases/download/24.26.30049.6/intel-level-zero-gpu_1.3.30049.6_amd64.deb && \
- wget https://github.com/intel/compute-runtime/releases/download/24.26.30049.6/intel-opencl-icd_24.26.30049.6_amd64.deb && \
- wget https://github.com/intel/compute-runtime/releases/download/24.26.30049.6/libigdgmm12_22.3.20_amd64.deb && \
+ wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.17537.20/intel-igc-core_1.0.17537.20_amd64.deb && \
+ wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.17537.20/intel-igc-opencl_1.0.17537.20_amd64.deb && \
+ wget https://github.com/intel/compute-runtime/releases/download/24.35.30872.22/intel-level-zero-gpu_1.3.30872.22_amd64.deb && \
+ wget https://github.com/intel/compute-runtime/releases/download/24.35.30872.22/intel-opencl-icd_24.35.30872.22_amd64.deb && \
+ wget https://github.com/intel/compute-runtime/releases/download/24.35.30872.22/libigdgmm12_22.5.0_amd64.deb && \
  dpkg -i *.deb && \
  rm *.deb
 
 # Intel NPU compute user-space drivers
 RUN mkdir -p /tmp/npu && \
   cd /tmp/npu && \
-  wget https://github.com/intel/linux-npu-driver/releases/download/v1.6.0/intel-level-zero-npu_1.6.0.20240814-10390978568_ubuntu22.04_amd64.deb && \
-  wget https://github.com/intel/linux-npu-driver/releases/download/v1.6.0/intel-driver-compiler-npu_1.6.0.20240814-10390978568_ubuntu22.04_amd64.deb && \
+  wget https://github.com/intel/linux-npu-driver/releases/download/v1.8.0/intel-driver-compiler-npu_1.8.0.20240916-10885588273_ubuntu22.04_amd64.deb && \
+  wget https://github.com/intel/linux-npu-driver/releases/download/v1.8.0/intel-level-zero-npu_1.8.0.20240916-10885588273_ubuntu22.04_amd64.deb && \
   dpkg -i *.deb && \
   rm *.deb
 
@@ -49,6 +49,6 @@ RUN /bin/bash -c "source /root/miniforge3/bin/activate && \
   /bin/bash -c "source /root/miniforge3/bin/activate ov_genai && \
   git clone --recursive https://github.com/openvinotoolkit/openvino.genai.git && \
   pip install update --upgrade && \
-  pip install openvino==2024.3.0 openvino-tokenizers==2024.3.0 openvino-genai==2024.3.0 && \
+  pip install openvino==2024.4.0 openvino-tokenizers==2024.4.0 openvino-genai==2024.4.0 && \
   pip install --upgrade-strategy eager -r /openvino.genai/samples/requirements.txt && \
   pip install --upgrade-strategy eager -r /openvino.genai/llm_bench/python/requirements.txt"
